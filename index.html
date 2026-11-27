@@ -329,7 +329,7 @@ $("orderForm").addEventListener("submit",async e=>{e.preventDefault();if(busy)re
 
 // Saisie de date sur smartphone : les « / » s'ajoutent automatiquement
 function dateMask(el){if(!el)return;el.setAttribute("maxlength","10");
-  el.addEventListener("input",e=>{if(e.inputType!=="insertText")return;const d=el.value.replace(/\D/g,"").slice(0,8);
+  el.addEventListener("input",e=>{const t=e.inputType||"";if(t.startsWith("delete")||t==="insertFromPaste"||t==="insertFromDrop")return;const d=el.value.replace(/\D/g,"").slice(0,8);
     let v=d.slice(0,2);if(d.length>=2)v+="/"+d.slice(2,4);if(d.length>=4)v+="/"+d.slice(4);el.value=v;el.dispatchEvent(new Event("change"))})}
 document.querySelectorAll('input[placeholder="JJ/MM/AAAA"]').forEach(dateMask);
 </script>
