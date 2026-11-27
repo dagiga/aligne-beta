@@ -242,7 +242,7 @@ const STOP=new Set(["excessif","excessive","exces","sens","manque","tendance","d
 const roots=item=>norm(item).split(/[^a-z]+/).filter(w=>w.length>=6&&!STOP.has(w)).map(w=>w.slice(0,7));
 const shared=(a,b)=>{const out=[];for(const x of a)for(const y of b){const rx=roots(x),ry=roots(y);if(rx.some(r=>ry.includes(r))&&!out.includes(x))out.push(x)}return out};
 const quals=n=>[...REF[n].qp,...REF[n].qs],dists=n=>[...REF[n].dp,...REF[n].ds];
-function parseDate(v){const m=v.trim().match(/^(\d{1,2})[\/.\- ](\d{1,2})[\/.\- ](\d{4})$/);if(!m)return null;
+function parseDate(v){v=String(v).trim();if(/^\d{8}$/.test(v))v=v.slice(0,2)+"/"+v.slice(2,4)+"/"+v.slice(4);const m=v.match(/^(\d{1,2})[\/.\- ](\d{1,2})[\/.\- ](\d{4})$/);if(!m)return null;
   const d=+m[1],mo=+m[2],y=+m[3],dt=new Date(y,mo-1,d);if(dt.getFullYear()!==y||dt.getMonth()!==mo-1||dt.getDate()!==d||y<1800||y>2100)return null;
   return {d,mo,y,txt:String(d).padStart(2,"0")+"/"+String(mo).padStart(2,"0")+"/"+y}}
 function compute(p,keep){const all=digits(String(p.d).padStart(2,"0")+String(p.mo).padStart(2,"0")+p.y);
@@ -326,6 +326,12 @@ $("orderForm").addEventListener("submit",async e=>{e.preventDefault();if(busy)re
   catch(err){m.className="msg err";m.textContent="Le service est momentanément injoignable. Réessayez dans un moment."}
   busy=false;$("send").disabled=false});
 }
+
+// Saisie de date sur smartphone : les « / » s'ajoutent automatiquement
+function dateMask(el){if(!el)return;el.setAttribute("maxlength","10");
+  el.addEventListener("input",e=>{if(e.inputType!=="insertText")return;const d=el.value.replace(/\D/g,"").slice(0,8);
+    let v=d.slice(0,2);if(d.length>=2)v+="/"+d.slice(2,4);if(d.length>=4)v+="/"+d.slice(4);el.value=v;el.dispatchEvent(new Event("change"))})}
+document.querySelectorAll('input[placeholder="JJ/MM/AAAA"]').forEach(dateMask);
 </script>
 </body>
 </html>
